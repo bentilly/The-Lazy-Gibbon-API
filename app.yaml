@@ -1,0 +1,21 @@
+application: thelazygibbonapi
+version: v0-0-1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+
+handlers:
+- url: /admin
+  script: admin.admin.app
+  login: admin
+  secure: always
+
+- url: /.*
+  script: tlg.app
+  
+
+  
+libraries:
+- name: jinja2
+  version: latest
