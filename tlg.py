@@ -2,13 +2,17 @@ import webapp2
 import json
 import logging
 
-from api import tlg_token
-from api import tlg_user
-from api import tlg_group
+from api import token_api
+from api import tlguser_api
+from api import group_api
+from api import activity_api
+from api import workout_api
 
-TLG_TOKEN = tlg_token.TLG_TOKEN()
-TLG_USER = tlg_user.TLG_USER()
-TLG_GROUP = tlg_group.TLG_GROUP()
+TLG_TOKEN = token_api.TLG_TOKEN()
+TLG_USER = tlguser_api.TLG_USER()
+TLG_GROUP = group_api.TLG_GROUP()
+TLG_ACTIVITY = activity_api.TLG_ACTIVITY()
+TLG_WORKOUT = workout_api.TLG_WORKOUT()
 
 
 
@@ -43,9 +47,40 @@ class APIHandler(webapp2.RequestHandler):
             self.response.out.write(TLG_USER.signup(jsonObj))
             return
         
+        if jsonObj['operation'] == 'user.getGroups':
+            self.response.write(TLG_USER.getGroups(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'user.getAdminGroups':
+            self.response.write(TLG_USER.getAdminGroups(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'user.getActivities':
+            self.response.write(TLG_USER.getActivites(jsonObj))
+            return
+        
         '''----- GROUP -----'''
         if jsonObj['operation'] == 'group.addGroup':
             self.response.out.write(TLG_GROUP.addGroup(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'group.addInvite':
+            self.response.out.write(TLG_GROUP.addInvite(jsonObj))
+            return
+        
+        #SYSADMIN ONLY
+        if jsonObj['operation'] == 'group.addMember':
+            self.response.out.write(TLG_GROUP.addMember(jsonObj))
+            return
+        
+        '''----- ACTIVITY -----'''
+        if jsonObj['operation'] == 'activity.addActivity':
+            self.response.out.write(TLG_ACTIVITY.addActivity(jsonObj))
+            return
+        
+        '''----- WORKOUT -----'''
+        if jsonObj['operation'] == 'workout.addWorkout':
+            self.response.out.write(TLG_WORKOUT.addWorkout(jsonObj))
             return
         
         self.response.write('{"status":"error", "message":"Unknown Request"}')

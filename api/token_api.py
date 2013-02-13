@@ -1,10 +1,8 @@
 import webapp2
 import json
 import logging
-from services import services
 
-TLGService = services.TLGService()
-
+import services.token_service
 
 class TLG_TOKEN(object):
 	def __init__(self):
@@ -12,7 +10,7 @@ class TLG_TOKEN(object):
 	
 	def createToken(self, jsonObj):
 		#Authentication: email, password
-		token = TLGService.createToken(jsonObj['email'], jsonObj['password'])
+		token = services.token_service.createToken(jsonObj['email'], jsonObj['password'])
 		
 		if token:
 			returnObj = {}
@@ -21,4 +19,4 @@ class TLG_TOKEN(object):
 			returnString = json.dumps(returnObj)
 			return returnString
 		else:
-			return '{"error":"email and/or password dont match a user"}'
+			return '{"status":"error", "message":"email and/or password dont match a user"}'

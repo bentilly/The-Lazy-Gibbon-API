@@ -2,8 +2,8 @@ from google.appengine.ext import ndb
 
 #TOKEN
 class Token(ndb.Model):
-    tlgUser = ndb.KeyProperty(kind="TLGUser")
-    date = ndb.DateTimeProperty(auto_now=True)
+    tlguser = ndb.KeyProperty(kind="TLGUser")
+    created = ndb.DateTimeProperty(auto_now_add=True)
 
 
 #USER
@@ -14,7 +14,42 @@ class TLGUser(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add=True)
     
 #GROUP
-class TLGGroup(ndb.Model):
+class Group(ndb.Model):
     name = ndb.StringProperty()
-    slug = ndb.StringProperty()
-    #add other properties later, eg description
+    created = ndb.DateTimeProperty(auto_now_add=True)
+    
+class Group_Member(ndb.Model):
+    group = ndb.KeyProperty(kind="Group")
+    tlguser = ndb.KeyProperty(kind="TLGUser")
+    active = ndb.BooleanProperty(default=True)
+    created = ndb.DateTimeProperty(auto_now_add=True)
+    
+class Group_Admin(ndb.Model):
+    group = ndb.KeyProperty(kind="Group")
+    tlguser = ndb.KeyProperty(kind="TLGUser")
+    created = ndb.DateTimeProperty(auto_now_add=True)
+    
+class Group_Invite(ndb.Model):
+    email = ndb.StringProperty()
+    tlguser = ndb.KeyProperty(kind="TLGUser")
+    group = ndb.KeyProperty(kind="Group")
+    invited_by = ndb.KeyProperty(kind="TLGUser")
+    admin_invite = ndb.BooleanProperty(default=False)
+    created = ndb.DateTimeProperty(auto_now_add=True)
+    
+#WORKOUT
+class Workout(ndb.Model):
+    tlguser = ndb.KeyProperty(kind="TLGUser")
+    date = ndb.DateProperty()
+    duration = ndb.IntegerProperty()
+    
+class Workout_Activity(ndb.Model):
+    workout = ndb.KeyProperty(kind="Workout")
+    activity = ndb.KeyProperty(kind="Activity")
+    
+#ACTIVITIES
+class Activity(ndb.Model):
+    name = ndb.StringProperty()
+    tlguser = ndb.KeyProperty(kind="TLGUser")
+    group = ndb.KeyProperty(kind="Group")
+    
