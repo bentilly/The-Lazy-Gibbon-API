@@ -4,8 +4,10 @@ import logging
 
 from google.appengine.api import users
 
-import services.token_service
-import services.group_service
+import services
+
+#import services.token_service
+#import services.group_service
 
 
 class TLG_GROUP(object):

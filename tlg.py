@@ -2,6 +2,7 @@ import webapp2
 import json
 import logging
 
+
 from api import token_api
 from api import tlguser_api
 from api import group_api
@@ -57,6 +58,11 @@ class APIHandler(webapp2.RequestHandler):
         
         if jsonObj['operation'] == 'user.getActivities':
             self.response.write(TLG_USER.getActivites(jsonObj))
+            return
+        
+        #Returns the Google Login page URL
+        if jsonObj['operation'] == 'user.getGoogleLoginPage':
+            self.response.write(TLG_USER.getGoogleLoginPage())
             return
         
         '''----- GROUP -----'''

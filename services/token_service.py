@@ -3,7 +3,10 @@ from google.appengine.ext import ndb
 
 from tlgDatastore import *
 
-import services.tlguser_service
+import tlguser_service
+
+#from services import tlguser_service
+#import services.tlguser_service
 
 '''class TOKENService(object):
     def __init__(self):
@@ -11,7 +14,7 @@ import services.tlguser_service
 
 '''----- TOKEN -----'''
 def createToken(email, password):
-    user = services.tlguser_service.getUserByEmailAndPassword(email, password)
+    user = tlguser_service.getUserByEmailAndPassword(email, password)
     if user == None:
         return
     

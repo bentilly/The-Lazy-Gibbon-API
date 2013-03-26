@@ -4,6 +4,8 @@ import logging
 
 import services.token_service
 
+#import services.token_service 
+
 class TLG_TOKEN(object):
 	def __init__(self):
 		return
@@ -13,9 +15,11 @@ class TLG_TOKEN(object):
 		token = services.token_service.createToken(jsonObj['email'], jsonObj['password'])
 		
 		if token:
+			user = token.tlguser.get()
 			returnObj = {}
 			returnObj['status'] = 'success'
 			returnObj['token'] = str(token.key.urlsafe())
+			returnObj['name'] = user.name;
 			returnString = json.dumps(returnObj)
 			return returnString
 		else:

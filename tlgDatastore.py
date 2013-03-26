@@ -41,7 +41,8 @@ class Group_Invite(ndb.Model):
 class Workout(ndb.Model):
     tlguser = ndb.KeyProperty(kind="TLGUser")
     date = ndb.DateProperty()
-    duration = ndb.IntegerProperty()
+    duration = ndb.IntegerProperty() #minutes
+    comment = ndb.StringProperty()
     
 class Workout_Activity(ndb.Model):
     workout = ndb.KeyProperty(kind="Workout")

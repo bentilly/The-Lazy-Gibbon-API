@@ -1,9 +1,14 @@
 import webapp2
 import json
+from google.appengine.api import users
 
 import services.tlguser_service
-import services.token_service
+import services.group_service
 import services.activity_service
+
+#import services.tlguser_service
+#import services.token_service
+#import services.activity_service
 
 class TLG_USER(object):
 	def __init__(self):
@@ -92,8 +97,14 @@ class TLG_USER(object):
 		return '{"status":"error", "message":"bad token"}'
 	
 	
-	
-	
+	def getGoogleLoginPage(self):
+		url = users.create_login_url()
+		returnObj = {}
+		returnObj['status'] = 'success'
+		returnObj['url'] = url
+		s = json.dumps(returnObj)
+		
+		return s
 	
 	
 	

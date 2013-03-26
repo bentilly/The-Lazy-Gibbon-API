@@ -2,9 +2,11 @@ import webapp2
 import json
 import logging
 
-import services.token_service
-import services.group_service
-import services.activity_service
+import services
+
+#import services.token_service
+#import services.group_service
+#import services.activity_service
 
 class TLG_ACTIVITY(object):
     def __init__(self):
@@ -16,7 +18,7 @@ class TLG_ACTIVITY(object):
         if tlguser:
             #Authenticated as user. Create Activity
             try:
-                group = services.group_service.getGroupByID(jsonObj['group'])
+                group = services.group_service.getGroupByKEY(jsonObj['group'])
             except:
                 group = None
                 

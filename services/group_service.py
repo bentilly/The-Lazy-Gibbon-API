@@ -4,8 +4,8 @@ from google.appengine.ext import ndb
 
 from tlgDatastore import *
 
-import services.utils
-import services.tlguser_service
+import utils
+import tlguser_service
 
 
 '''class GROUPService(object):
@@ -16,7 +16,7 @@ import services.tlguser_service
 
 '''.....ADD.....'''
 def addGroup(name, tlguser):
-    slug = services.utils.slugify(name)
+    slug = utils.slugify(name)
     #check for existing group with this slug
     if getGroupByID(slug) != None:
         return
@@ -47,7 +47,7 @@ def addInvite(tlguser, group, email, admin):
     slug = group.key.id() + '~invite~' + email + '~by~' + tlguser.key.id()
     invite = Group_Invite(id = slug)
     
-    invitedUser = services.tlguser_service.getUserByEmail(email)
+    invitedUser = tlguser_service.getUserByEmail(email)
     if invitedUser:
         invite.tlguser = invitedUser.key
     else:
@@ -64,7 +64,7 @@ def addInvite(tlguser, group, email, admin):
 def addMember(email, groupString):
     groupKey = ndb.Key(urlsafe=groupString)
     group = groupKey.get()
-    tlguser = services.tlguser_service.getUserByEmail(email)
+    tlguser = tlguser_service.getUserByEmail(email)
     if group:
         if tlguser:
             slug = group.key.id() + '~member~' + tlguser.key.id()
@@ -86,6 +86,17 @@ def getGroupByID(slug):
         return group
     
     return None
+
+def getGroupByKEY(keyString):
+    try:
+        groupKey = ndb.Key(urlsafe=keyString)
+        group = groupKey.get()
+        if group:
+            return group
+    except:
+        return
+    
+    return
 
 
 def getGroupAdminByGroupAndAdmin(group, tlguser):

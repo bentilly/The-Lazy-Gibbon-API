@@ -2,14 +2,14 @@ from google.appengine.ext import ndb
 from tlgDatastore import *
 import logging
 
-import services.utils
+import utils
 
 def addActivity(name, tlguser, group):
     if tlguser:
         ownerslug = tlguser.key.id()
     elif group:
         ownerslug = group.key.id()
-    nameslug = services.utils.slugify(name)
+    nameslug = utils.slugify(name)
     slug = ownerslug + '~activity~' + nameslug
     
     activity = Activity(id = slug)
