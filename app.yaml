@@ -7,9 +7,10 @@ threadsafe: yes
 
 handlers:
 - url: /admin
-  script: admin.admin.app
-  login: admin
-  secure: always
+  static_dir: admin
+  
+- url: /web
+  static_dir: web
 
 - url: /.*
   script: tlg.app

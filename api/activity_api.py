@@ -38,3 +38,17 @@ class TLG_ACTIVITY(object):
                 
         else:
             return '{"status":"error", "message":"bad token"}'
+        
+        
+    def updateActivity(self, jsonObj):
+        #Authentication: Valid TOKEN, If GROUP, Valid GROUP ID, TOKEN.TLGUSER is ADMIN of GROUP
+        tlguser = services.token_service.getUserFromToken(jsonObj['token'])
+        if tlguser:
+            activity = services.activity_service.updateActivity(jsonObj['key'], jsonObj['name'], jsonObj['colour'])
+            if activity:
+                return '{"status":"success", "message":"activity updated"}'
+            else:
+                return '{"status":"error", "message":"activity not updated"}'
+        
+        else:
+            return '{"status":"error", "message":"bad token"}'

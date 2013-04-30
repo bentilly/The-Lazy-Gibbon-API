@@ -19,8 +19,9 @@ TLG_WORKOUT = workout_api.TLG_WORKOUT()
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('Welcome to The LAzy Gibbon web service')
+        #self.response.headers['Content-Type'] = 'text/plain'
+        #self.response.write('Welcome to The LAzy Gibbon web service')
+        self.redirect("/web/index.html")
 
 
 class APIHandler(webapp2.RequestHandler):
@@ -60,6 +61,14 @@ class APIHandler(webapp2.RequestHandler):
             self.response.write(TLG_USER.getActivites(jsonObj))
             return
         
+        if jsonObj['operation'] == 'user.getWorkouts':
+            self.response.write(TLG_USER.getWorkouts(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'user.getAllWorkouts':
+            self.response.write(TLG_USER.getAllWorkouts(jsonObj))
+            return
+        
         #Returns the Google Login page URL
         if jsonObj['operation'] == 'user.getGoogleLoginPage':
             self.response.write(TLG_USER.getGoogleLoginPage())
@@ -84,9 +93,17 @@ class APIHandler(webapp2.RequestHandler):
             self.response.out.write(TLG_ACTIVITY.addActivity(jsonObj))
             return
         
+        if jsonObj['operation'] == 'activity.updateActivity':
+            self.response.out.write(TLG_ACTIVITY.updateActivity(jsonObj))
+            return
+        
         '''----- WORKOUT -----'''
         if jsonObj['operation'] == 'workout.addWorkout':
             self.response.out.write(TLG_WORKOUT.addWorkout(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'workout.updateWorkout':
+            self.response.out.write(TLG_WORKOUT.updateWorkout(jsonObj))
             return
         
         self.response.write('{"status":"error", "message":"Unknown Request"}')

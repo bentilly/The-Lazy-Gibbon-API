@@ -4,22 +4,18 @@ import logging
 
 import utils
 
-def addActivity(name, tlguser, group):
-    if tlguser:
-        ownerslug = tlguser.key.id()
-    elif group:
-        ownerslug = group.key.id()
-    nameslug = utils.slugify(name)
-    slug = ownerslug + '~activity~' + nameslug
-    
-    activity = Activity(id = slug)
+def addActivity(name, tlguser, group, colour):
+    activity = Activity()
     activity.name = name
     if tlguser:
         activity.tlguser = tlguser.key
-        ownerslug = tlguser.key.id()
     elif group:
         activity.group = group.key
-        ownerslug = group.key.id()
+        
+    if colour:
+        activity.colour = colour #TODO: validate
+    else:
+        activity.colour = utils.createRandomColour()
         
     activity.put()
     
@@ -34,3 +30,31 @@ def getActivities(owner):
         return activities
     else:
         return
+    
+
+
+def updateActivity(keyString, name, colour):
+    activity = getActivityByKEY(keyString)
+    if activity:
+        activity.name = name
+        activity.colour = colour
+        activity.put()
+        
+        return activity
+    
+    return
+    
+    
+    
+    
+    
+def getActivityByKEY(keyString):
+    try:
+        activityKey = ndb.Key(urlsafe=keyString)
+        activity = activityKey.get()
+        if activity:
+            return activity
+    except:
+        return
+    
+    return

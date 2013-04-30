@@ -37,20 +37,22 @@ class Group_Invite(ndb.Model):
     admin_invite = ndb.BooleanProperty(default=False)
     created = ndb.DateTimeProperty(auto_now_add=True)
     
+#ACTIVITIES
+class Activity(ndb.Model):
+    name = ndb.StringProperty()
+    tlguser = ndb.KeyProperty(kind="TLGUser")
+    group = ndb.KeyProperty(kind="Group")
+    colour = ndb.StringProperty()
 #WORKOUT
 class Workout(ndb.Model):
     tlguser = ndb.KeyProperty(kind="TLGUser")
     date = ndb.DateProperty()
     duration = ndb.IntegerProperty() #minutes
     comment = ndb.StringProperty()
+    activities = ndb.KeyProperty(kind="Activity", repeated=True)#list of all activities associated with this workout. Doubles up on Workout_Activity but is easy to query
     
-class Workout_Activity(ndb.Model):
-    workout = ndb.KeyProperty(kind="Workout")
-    activity = ndb.KeyProperty(kind="Activity")
+#class Workout_Activity(ndb.Model):
+#    workout = ndb.KeyProperty(kind="Workout")
+#    activity = ndb.KeyProperty(kind="Activity")
     
-#ACTIVITIES
-class Activity(ndb.Model):
-    name = ndb.StringProperty()
-    tlguser = ndb.KeyProperty(kind="TLGUser")
-    group = ndb.KeyProperty(kind="Group")
     
