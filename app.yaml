@@ -1,5 +1,5 @@
 application: thelazygibbonapi
-version: v0-0-3
+version: v0-0-11
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -8,6 +8,7 @@ threadsafe: yes
 handlers:
 - url: /admin
   static_dir: admin
+  login: admin
   
 - url: /web
   static_dir: web

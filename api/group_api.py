@@ -65,11 +65,63 @@ class TLG_GROUP(object):
             return '{"status":"error", "message":"you need to be a system admin to do this"}'
                 
                 
-                
-                
-                
-                
-                
+    def getMemberWorkouts(self, jsonObj):
+        #Authentication: Valid TOKEN, Valid GROUP. USER is MEMBER or ADMIN of group
+        tlguser = services.token_service.getUserFromToken(jsonObj['token'])
+        if tlguser:
+            group = services.group_service.getGroupByKEY(jsonObj['group'])
+            if group:
+                groupAdmin = services.group_service.getGroupAdminByGroupAndAdmin(group, tlguser)
+                groupMember = services.group_service.getGroupMemberByGroupAndUser(group, tlguser)
+                if groupAdmin or groupMember:
+                    #Authenticated
+                    #setup  
+                    returnObj = {}
+                    memberList = []
+                    #get group members
+                    groupMembers = services.group_service.getMembers(group)
+                    #get group activities
+                    groupActivities = services.group_service.getActivities(group)
+                    
+                    #build response
+                    for member in groupMembers:
+                        memberUser = member.tlguser.get()
+                        #group activities
+                        activitySummaries = []
+                        for groupActivity in groupActivities:
+                            #get workouts for this user and activity
+                            workoutSummaries = services.workout_service.getWorkoutSummariesByUserAndActivity(member.tlguser, groupActivity.key)
+                            #make activity summary object
+                            if workoutSummaries:
+                                activitySummary = {
+                                                   'activity':groupActivity.key.urlsafe(),
+                                                   'workoutSummaries':workoutSummaries
+                                                   }
+                                activitySummaries.append(activitySummary)
+                        
+                        memberData = {
+                                       'name':memberUser.name,
+                                       'activities':activitySummaries
+                                       }
+                        
+                        if memberUser == tlguser:
+                            memberData['currentUser'] = 'true'
+                        
+                        memberList.append(memberData)
+                    
+                    returnObj['status'] = 'success'
+                    returnObj['members'] = memberList
+                    s = json.dumps(returnObj)
+            
+                    return s
+                    
+                    
+                else:
+                    return '{"status":"error", "message":"user not admin of group"}'
+            else:
+                return '{"status":"error", "message":"invalid group"}'
+        else:
+            return '{"status":"error", "message":"invalid token"}'
                 
                 
                 

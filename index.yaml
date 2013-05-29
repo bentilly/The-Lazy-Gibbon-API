@@ -12,6 +12,12 @@ indexes:
 
 - kind: Workout
   properties:
+  - name: activities
+  - name: tlguser
+  - name: date
+
+- kind: Workout
+  properties:
   - name: tlguser
   - name: date
 

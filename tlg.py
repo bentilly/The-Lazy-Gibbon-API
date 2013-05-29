@@ -38,10 +38,17 @@ class APIHandler(webapp2.RequestHandler):
         self.data = self.request.get('data')
         jsonObj = json.loads(self.data)
         
+        try:
+            logging.info(jsonObj['operation'])
+        except:
+            logging.info('no "operation" supplied')
+        
+        
         '''----- TOKEN -----'''
         #same as login
         if jsonObj['operation'] == 'token.createToken':
             self.response.out.write(TLG_TOKEN.createToken(jsonObj))
+            
             return
         
         '''----- USER -----'''
@@ -55,6 +62,10 @@ class APIHandler(webapp2.RequestHandler):
         
         if jsonObj['operation'] == 'user.getAdminGroups':
             self.response.write(TLG_USER.getAdminGroups(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'user.getAllMyGroups':
+            self.response.write(TLG_USER.getAllMyGroups(jsonObj))
             return
         
         if jsonObj['operation'] == 'user.getActivities':
@@ -86,6 +97,10 @@ class APIHandler(webapp2.RequestHandler):
         #SYSADMIN ONLY
         if jsonObj['operation'] == 'group.addMember':
             self.response.out.write(TLG_GROUP.addMember(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'group.getMemberWorkouts':
+            self.response.out.write(TLG_GROUP.getMemberWorkouts(jsonObj))
             return
         
         '''----- ACTIVITY -----'''

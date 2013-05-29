@@ -98,11 +98,19 @@ def getGroupByKEY(keyString):
     
     return
 
-
+#Authentication
 def getGroupAdminByGroupAndAdmin(group, tlguser):
     groupAdmin = Group_Admin.query(ndb.AND(Group_Admin.group == group.key, Group_Admin.tlguser == tlguser.key)).fetch(1)
     if groupAdmin:
         return groupAdmin
+    
+    return None
+
+#Authentication
+def getGroupMemberByGroupAndUser(group, tlguser):
+    groupMember = Group_Member.query(ndb.AND(Group_Member.group == group.key, Group_Member.tlguser == tlguser.key)).fetch(1)
+    if groupMember:
+        return groupMember
     
     return None
     
@@ -110,8 +118,12 @@ def getGroupAdminByGroupAndAdmin(group, tlguser):
 
 def getGroupMembersFromUser(tlguser):
     groupMembers = Group_Member.query(Group_Member.tlguser == tlguser.key).fetch(50) #TODO: limit of 50 appropriate? Cursor?
-    if groupMembers:
-        return groupMembers
+    if len(groupMembers) > 0:
+        groups = []
+        for groupMember in groupMembers:
+            groups.append( groupMember.group.get() )
+            
+        return groups
     
     return None
 
@@ -120,10 +132,31 @@ def getGroupMembersFromUser(tlguser):
 def getGroupAdminsFromUser(tlguser):
     groupAdmins = Group_Admin.query(Group_Admin.tlguser == tlguser.key).fetch(50)
     #TODO: limit of 50 appropriate? Cursor?
-    if groupAdmins:
-        return groupAdmins
+    if len(groupAdmins) > 0:
+        groups = []
+        for groupAdmin in groupAdmins:
+            groups.append( groupAdmin.group.get() )
+            
+        return groups
     
     return None
 
-
+def getMembers(group):
+    groupMembers = Group_Member.query(Group_Member.group == group.key).fetch(100) #TODO: remove limit?
+    return groupMembers
+    
+    
+def getActivities(group):
+    groupActivities = Activity.query(Activity.group == group.key).fetch(100) #TODO: remove limit?
+    return groupActivities    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
