@@ -121,6 +121,10 @@ class APIHandler(webapp2.RequestHandler):
             self.response.out.write(TLG_WORKOUT.updateWorkout(jsonObj))
             return
         
+        if jsonObj['operation'] == 'workout.deleteWorkout':
+            self.response.out.write(TLG_WORKOUT.deleteWorkout(jsonObj))
+            return
+        
         self.response.write('{"status":"error", "message":"Unknown Request"}')
         
 app = webapp2.WSGIApplication([

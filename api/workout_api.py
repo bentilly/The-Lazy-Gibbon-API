@@ -86,10 +86,19 @@ class TLG_WORKOUT(object):
             return '{"status":"error", "message":"invalid token"}'
         
         
+    def deleteWorkout(self, jsonObj):
+        #Authentication: Valid TOKEN
+        tlguser = services.token_service.getUserFromToken(jsonObj['token'])
+        if tlguser:
+            #get workout
+            workout = services.workout_service.getWorkoutByKEY(jsonObj['key']);
+            if workout:
+                #check user is allowed to edit workout
+                if workout.tlguser == tlguser.key:
+                    workout.key.delete()
+                    return '{"status":"success", "message":"Workout deleted"}'
         
-        
-        
-        
+        return '{"status":"error", "message":"invalid token"}'
         
         
         
