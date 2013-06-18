@@ -9,11 +9,14 @@ from api import group_api
 from api import activity_api
 from api import workout_api
 
+from services import token_service
+
 TLG_TOKEN = token_api.TLG_TOKEN()
 TLG_USER = tlguser_api.TLG_USER()
 TLG_GROUP = group_api.TLG_GROUP()
 TLG_ACTIVITY = activity_api.TLG_ACTIVITY()
 TLG_WORKOUT = workout_api.TLG_WORKOUT()
+
 
 
 
@@ -39,7 +42,15 @@ class APIHandler(webapp2.RequestHandler):
         jsonObj = json.loads(self.data)
         
         try:
-            logging.info(jsonObj['operation'])
+            if jsonObj['operation'] == 'token.createToken':
+                logString = jsonObj['email']
+            else:
+                tlguser = token_service.getUserFromToken(jsonObj['token'])
+                logString = tlguser.name + " : " + tlguser.email
+            
+            logString += " : "
+            logString += jsonObj['operation']
+            logging.info(logString)
         except:
             logging.info('no "operation" supplied')
         
@@ -54,6 +65,10 @@ class APIHandler(webapp2.RequestHandler):
         '''----- USER -----'''
         if jsonObj['operation'] == 'user.signup':
             self.response.out.write(TLG_USER.signup(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'user.resetPassword':
+            self.response.out.write(TLG_USER.resetPassword(jsonObj))
             return
         
         if jsonObj['operation'] == 'user.getGroups':
@@ -93,15 +108,20 @@ class APIHandler(webapp2.RequestHandler):
         if jsonObj['operation'] == 'group.addInvite':
             self.response.out.write(TLG_GROUP.addInvite(jsonObj))
             return
+
+        if jsonObj['operation'] == 'group.getMemberWorkouts':
+            self.response.out.write(TLG_GROUP.getMemberWorkouts(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'group.addInvite':
+            self.response.out.write(TLG_GROUP.addInvite(jsonObj))
+            return
         
         #SYSADMIN ONLY
         if jsonObj['operation'] == 'group.addMember':
             self.response.out.write(TLG_GROUP.addMember(jsonObj))
             return
         
-        if jsonObj['operation'] == 'group.getMemberWorkouts':
-            self.response.out.write(TLG_GROUP.getMemberWorkouts(jsonObj))
-            return
         
         '''----- ACTIVITY -----'''
         if jsonObj['operation'] == 'activity.addActivity':

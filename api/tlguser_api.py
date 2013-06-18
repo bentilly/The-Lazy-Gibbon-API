@@ -1,15 +1,16 @@
 import webapp2
 import json
 import datetime
+import os
+import logging
 from google.appengine.api import users
 
 import services.tlguser_service
 import services.group_service
 import services.activity_service
+import services.email_service
 
-#import services.tlguser_service
-#import services.token_service
-#import services.activity_service
+import services.utils
 
 class TLG_USER(object):
 	def __init__(self):
@@ -24,7 +25,16 @@ class TLG_USER(object):
 			return '{"status":"success"}'
 		else:
 			return '{"error":"User already exists"}'
-	
+
+	def resetPassword(self, jsonObj):
+		tlguser = services.tlguser_service.getUserByEmail(jsonObj['email'])
+		if tlguser:
+			tlguser.resetToken = services.utils.createRandomString(25)
+			tlguser.resetCreated = datetime.date.today()
+			tlguser.put()
+			services.email_service.sendResetPasswordEmail(tlguser)
+			
+		return '{"status":"success", "message":"email sent"}'
 
 
 	def getGroups(self, jsonObj):

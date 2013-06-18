@@ -1,5 +1,5 @@
 application: thelazygibbonapi
-version: v0-0-18
+version: v0-0-22
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -12,6 +12,12 @@ handlers:
   
 - url: /web
   static_dir: web
+  
+- url: /reset.*
+  script: resetPassword.app
+  
+- url: /groupInvite.*
+  script: groupInvite.app
 
 - url: /.*
   script: tlg.app

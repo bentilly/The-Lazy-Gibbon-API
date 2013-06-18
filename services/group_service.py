@@ -44,15 +44,8 @@ def addGroupAdmin(group, tlguser):
     return groupAdmin
 
 def addInvite(tlguser, group, email, admin):
-    slug = group.key.id() + '~invite~' + email + '~by~' + tlguser.key.id()
-    invite = Group_Invite(id = slug)
-    
-    invitedUser = tlguser_service.getUserByEmail(email)
-    if invitedUser:
-        invite.tlguser = invitedUser.key
-    else:
-        invite.email = email
-        
+    invite = Group_Invite()
+    invite.email = email 
     invite.group = group.key
     invite.invited_by = tlguser.key
     if admin == 'true':
@@ -67,16 +60,22 @@ def addMember(email, groupString):
     tlguser = tlguser_service.getUserByEmail(email)
     if group:
         if tlguser:
-            slug = group.key.id() + '~member~' + tlguser.key.id()
-            member = Group_Member(id = slug)
+            member = Group_Member()
             member.tlguser = tlguser.key
             member.group = group.key
             member.put()
+            logging.info(member)
             return member
         
     else:
         return
-    
+
+def addMemberFromObjects(tlguser, group):
+    member = Group_Member()
+    member.tlguser = tlguser.key
+    member.group = group.key
+    member.put()
+    return member
     
     
 '''.....GET.....'''
@@ -151,7 +150,17 @@ def getActivities(group):
     return groupActivities    
     
     
+def getInvite(keyString):
+    logging.info('getting invite')
+    try:
+        inviteKey = ndb.Key(urlsafe=keyString)
+        invite = inviteKey.get()
+        if invite:
+            return invite
+    except:
+        return
     
+    return
     
     
     

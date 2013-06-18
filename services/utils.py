@@ -1,5 +1,7 @@
 import logging
 import re #stripping whitespace for slugs
+import random
+import string
 from random import randrange
 from google.appengine.ext import ndb
 
@@ -15,4 +17,7 @@ def slugify(string):
     
 def createRandomColour():
     return "%s" % "".join([hex(randrange(0, 255))[2:] for i in range(3)])
-    
+
+def createRandomString(length):
+    sample = string.lowercase + string.digits
+    return ''.join(random.choice(sample) for i in range(length))

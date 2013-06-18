@@ -16,7 +16,7 @@ def addUser(email, password, name):
     if getUserByEmail(email) != None:
         return
 
-    user = TLGUser(id=email)
+    user = TLGUser()
     user.name = name
     user.email = email;
     user.password = password
@@ -30,7 +30,7 @@ def getUserByEmail(email):
     if users:
         for user in users:
             return user
-    
+
     return None
 
 def getUserByEmailAndPassword(email, password):
@@ -43,4 +43,10 @@ def getUserByEmailAndPassword(email, password):
     
     
     
+def getUserByResetToken(resetToken):
+    users = TLGUser.query(TLGUser.resetToken == resetToken).fetch(1)
+    if users:
+        for user in users:
+            return user
     
+    return None

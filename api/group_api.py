@@ -31,13 +31,19 @@ class TLG_GROUP(object):
         #Authentication: Valid TOKEN, Valid GROUP ID, TOKEN.TLGUSER is ADMIN of GROUP
         tlguser = services.token_service.getUserFromToken(jsonObj['token'])
         if tlguser:
-            group = services.group_service.getGroupByID(jsonObj['group'])
+            group = services.group_service.getGroupByKEY(jsonObj['group'])
             if group:
                 groupAdmin = services.group_service.getGroupAdminByGroupAndAdmin(group, tlguser)
                 if groupAdmin:
                     #Authenticated
-                    invite = services.group_service.addInvite(tlguser, group, jsonObj['email'], jsonObj['admin'])
+                    try:
+                        admin = jsonObj['admin']
+                    except:
+                        admin = None;
+                    
+                    invite = services.group_service.addInvite(tlguser, group, jsonObj['email'], admin)
                     if invite:
+                        services.email_service.sendGroupInviteEmail(invite)
                         return '{"status":"success"}'
                     else:
                         return '{"status":"error", "message":"Could not create invite. Possible bad email"}'
