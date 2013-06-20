@@ -107,6 +107,7 @@ class TLG_GROUP(object):
                         
                         memberData = {
                                        'name':memberUser.name,
+                                       'email':memberUser.email,
                                        'activities':activitySummaries
                                        }
                         
