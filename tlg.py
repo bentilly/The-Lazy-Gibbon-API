@@ -42,7 +42,7 @@ class APIHandler(webapp2.RequestHandler):
         jsonObj = json.loads(self.data)
         
         try:
-            if jsonObj['operation'] == 'token.createToken':
+            if jsonObj['operation'] == 'token.createToken' or jsonObj['operation'] == 'user.signup':
                 logString = jsonObj['email']
             else:
                 tlguser = token_service.getUserFromToken(jsonObj['token'])
@@ -64,11 +64,15 @@ class APIHandler(webapp2.RequestHandler):
         
         '''----- USER -----'''
         if jsonObj['operation'] == 'user.signup':
-            self.response.out.write(TLG_USER.signup(jsonObj))
+            #get the host URL for creating full links (eg in emails)
+            host_url = self.request.host_url
+            self.response.out.write(TLG_USER.signup(jsonObj, host_url))
             return
         
         if jsonObj['operation'] == 'user.resetPassword':
-            self.response.out.write(TLG_USER.resetPassword(jsonObj))
+            #get the host URL for creating full links (eg in emails)
+            host_url = self.request.host_url
+            self.response.out.write(TLG_USER.resetPassword(jsonObj, host_url))
             return
         
         if jsonObj['operation'] == 'user.getGroups':
@@ -104,17 +108,15 @@ class APIHandler(webapp2.RequestHandler):
         if jsonObj['operation'] == 'group.addGroup':
             self.response.out.write(TLG_GROUP.addGroup(jsonObj))
             return
-        
-        if jsonObj['operation'] == 'group.addInvite':
-            self.response.out.write(TLG_GROUP.addInvite(jsonObj))
-            return
 
         if jsonObj['operation'] == 'group.getMemberWorkouts':
             self.response.out.write(TLG_GROUP.getMemberWorkouts(jsonObj))
             return
         
         if jsonObj['operation'] == 'group.addInvite':
-            self.response.out.write(TLG_GROUP.addInvite(jsonObj))
+            #get the host URL for creating full links (eg in emails)
+            host_url = self.request.host_url
+            self.response.out.write(TLG_GROUP.addInvite(jsonObj, host_url))
             return
         
         #SYSADMIN ONLY

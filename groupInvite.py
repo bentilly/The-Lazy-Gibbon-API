@@ -30,7 +30,7 @@ class InvitePage(webapp2.RequestHandler):
                 #delete invite
                 invite.key.delete()
                 #confirmation page
-                template_values = {'invite':invite, 'user':tlguser}
+                template_values = {'invite':invite, 'user':tlguser, 'host_url':self.request.host_url}
                 template = JINJA_ENVIRONMENT.get_template('inviteConfirm.html')
                 self.response.write(template.render(template_values))
             else:
@@ -51,14 +51,14 @@ class InviteSignup(webapp2.RequestHandler):
                 #make new user
                 p = hashlib.md5()
                 p.update(self.request.get('password'))
-                tlguser = tlguser_service.addUser(invite.email, p.hexdigest(), self.request.get('name'))
+                tlguser = tlguser_service.addUser(invite.email, p.hexdigest(), self.request.get('name'), self.request.host_url)
                 #make member
                 group = invite.group.get()
                 member = group_service.addMemberFromObjects(tlguser, group)
                 #delete invite
                 invite.key.delete()
                 #confirmation page
-                template_values = {'invite':invite, 'user':tlguser}
+                template_values = {'invite':invite, 'user':tlguser, 'host_url':self.request.host_url}
                 template = JINJA_ENVIRONMENT.get_template('inviteConfirm.html')
                 self.response.write(template.render(template_values))
                 return

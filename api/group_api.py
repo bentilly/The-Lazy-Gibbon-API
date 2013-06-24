@@ -27,7 +27,7 @@ class TLG_GROUP(object):
             return '{"error":"invalid token"}'
 
 
-    def addInvite(self, jsonObj):
+    def addInvite(self, jsonObj, host_url):
         #Authentication: Valid TOKEN, Valid GROUP ID, TOKEN.TLGUSER is ADMIN of GROUP
         tlguser = services.token_service.getUserFromToken(jsonObj['token'])
         if tlguser:
@@ -43,7 +43,7 @@ class TLG_GROUP(object):
                     
                     invite = services.group_service.addInvite(tlguser, group, jsonObj['email'], admin)
                     if invite:
-                        services.email_service.sendGroupInviteEmail(invite)
+                        services.email_service.sendGroupInviteEmail(invite, host_url)
                         return '{"status":"success"}'
                     else:
                         return '{"status":"error", "message":"Could not create invite. Possible bad email"}'

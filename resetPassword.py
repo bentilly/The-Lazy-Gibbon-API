@@ -44,7 +44,7 @@ class ResetPasswordSubmit(webapp2.RequestHandler):
                 tlguser.resetCreated = None
                 tlguser.put()
                 #display thanks page
-                template_values = {'user':tlguser}
+                template_values = {'user':tlguser, 'host_url':self.request.host_url}
                 template = JINJA_ENVIRONMENT.get_template('resetPasswordConfirm.html')
                 self.response.write(template.render(template_values))
                 

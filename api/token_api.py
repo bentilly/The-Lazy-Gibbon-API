@@ -12,7 +12,7 @@ class TLG_TOKEN(object):
 	
 	def createToken(self, jsonObj):
 		#Authentication: email, password
-		token = services.token_service.createToken(jsonObj['email'], jsonObj['password'])
+		token = services.token_service.createLoginToken(jsonObj['email'], jsonObj['password'])
 		
 		if token:
 			user = token.tlguser.get()

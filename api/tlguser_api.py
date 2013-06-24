@@ -9,6 +9,7 @@ import services.tlguser_service
 import services.group_service
 import services.activity_service
 import services.email_service
+import services.token_service
 
 import services.utils
 
@@ -17,22 +18,28 @@ class TLG_USER(object):
 		return
 	
 	
-	def signup(self, jsonObj):
+	def signup(self, jsonObj, host_url):
 		#Authentication: NONE
-		tlguser = services.tlguser_service.addUser(jsonObj['email'], jsonObj['password'], jsonObj['name'])
-		
+		tlguser = services.tlguser_service.addUser(jsonObj['email'], jsonObj['password'], jsonObj['name'], host_url)
 		if tlguser:
-			return '{"status":"success"}'
+			token = services.token_service.createLoginTokenFromUser(tlguser)
+			returnObj = {}
+			returnObj['status'] = 'success'
+			returnObj['token'] = str(token.key.urlsafe())
+			returnObj['name'] = tlguser.name;
+			returnString = json.dumps(returnObj)
+			return returnString
 		else:
-			return '{"error":"User already exists"}'
+			return '{"status":"error", "message":"User already exists"}'
 
-	def resetPassword(self, jsonObj):
+
+	def resetPassword(self, jsonObj, host_url):
 		tlguser = services.tlguser_service.getUserByEmail(jsonObj['email'])
 		if tlguser:
 			tlguser.resetToken = services.utils.createRandomString(25)
 			tlguser.resetCreated = datetime.date.today()
 			tlguser.put()
-			services.email_service.sendResetPasswordEmail(tlguser)
+			services.email_service.sendResetPasswordEmail(tlguser, host_url)
 			
 		return '{"status":"success", "message":"email sent"}'
 
