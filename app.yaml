@@ -1,5 +1,5 @@
 application: thelazygibbonapi
-version: v0-0-27
+version: v0-0-31
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -12,6 +12,9 @@ handlers:
   
 - url: /web
   static_dir: web
+  
+- url: /app
+  static_dir: app
   
 - url: /reset.*
   script: resetPassword.app
@@ -30,3 +33,7 @@ handlers:
 libraries:
 - name: jinja2
   version: latest
+  
+  
+builtins:
+- remote_api: on

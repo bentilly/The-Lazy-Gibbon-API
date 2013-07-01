@@ -18,13 +18,13 @@ TLG_ACTIVITY = activity_api.TLG_ACTIVITY()
 TLG_WORKOUT = workout_api.TLG_WORKOUT()
 
 
-
-
-class MainPage(webapp2.RequestHandler):
+class HomePage(webapp2.RequestHandler):
     def get(self):
-        #self.response.headers['Content-Type'] = 'text/plain'
-        #self.response.write('Welcome to The LAzy Gibbon web service')
         self.redirect("/web/index.html")
+
+class AppPage(webapp2.RequestHandler):
+    def get(self):
+        self.redirect("/app/index.html")
 
 
 class APIHandler(webapp2.RequestHandler):
@@ -150,7 +150,8 @@ class APIHandler(webapp2.RequestHandler):
         self.response.write('{"status":"error", "message":"Unknown Request"}')
         
 app = webapp2.WSGIApplication([
-								('/', MainPage),
+								('/', HomePage),
+                                ('/app', AppPage),
 								('/api', APIHandler) 
 								
 								], debug=True)
