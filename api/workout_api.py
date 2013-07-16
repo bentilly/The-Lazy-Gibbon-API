@@ -95,7 +95,7 @@ class TLG_WORKOUT(object):
             if workout:
                 #check user is allowed to edit workout
                 if workout.tlguser == tlguser.key:
-                    workout.key.delete()
+                    workout.key.delete() #should not do this here! Move to services layer
                     return '{"status":"success", "message":"Workout deleted"}'
         
         return '{"status":"error", "message":"invalid token"}'

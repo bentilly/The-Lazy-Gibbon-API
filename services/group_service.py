@@ -86,12 +86,25 @@ def getGroupByID(slug):
     
     return None
 
+#TODO: Type test - make sure its an entity of the right type. These just return whatever the key represents
 def getGroupByKEY(keyString):
     try:
         groupKey = ndb.Key(urlsafe=keyString)
         group = groupKey.get()
         if group:
             return group
+    except:
+        return
+    
+    return
+
+def getInviteByKey(keyString):
+    try:
+        inviteKey = ndb.Key(urlsafe=keyString)
+        invite = inviteKey.get()
+        if invite:
+            logging.info(inviteKey.kind())
+            return invite
     except:
         return
     
@@ -162,7 +175,9 @@ def getInvite(keyString):
     
     return
     
-    
+def getGroupInvites(group):
+    invites = Group_Invite.query(Group_Invite.group == group.key).fetch(100)
+    return invites
     
     
     

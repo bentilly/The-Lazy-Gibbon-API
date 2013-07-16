@@ -113,10 +113,18 @@ class APIHandler(webapp2.RequestHandler):
             self.response.out.write(TLG_GROUP.getMemberWorkouts(jsonObj))
             return
         
+        if jsonObj['operation'] == 'group.getGroupInvites':
+            self.response.out.write(TLG_GROUP.getGroupInvites(jsonObj))
+            return
+        
         if jsonObj['operation'] == 'group.addInvite':
             #get the host URL for creating full links (eg in emails)
             host_url = self.request.host_url
             self.response.out.write(TLG_GROUP.addInvite(jsonObj, host_url))
+            return
+        
+        if jsonObj['operation'] == 'group.deleteInvite':
+            self.response.out.write(TLG_GROUP.deleteInvite(jsonObj))
             return
         
         #SYSADMIN ONLY
