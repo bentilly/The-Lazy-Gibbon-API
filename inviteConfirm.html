@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+{% autoescape true %}
+
+<html>
+
+	<head>
+		<title>The Lazy Gibbon | Invitation confirmation</title>
+	</head>
+	
+	<body>
+		<h2>Hi {{ user.name }}</h2>
+				
+		<p>You are now a member of {{ invite.group.get().name }}</p>
+		
+		<p>Go to <a href='{{ host_url }}'>The Lazy Gibbon</a></p>
+		
+		
+	</body>
+</html>
+{% endautoescape %}

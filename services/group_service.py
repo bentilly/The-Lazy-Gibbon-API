@@ -44,15 +44,8 @@ def addGroupAdmin(group, tlguser):
     return groupAdmin
 
 def addInvite(tlguser, group, email, admin):
-    slug = group.key.id() + '~invite~' + email + '~by~' + tlguser.key.id()
-    invite = Group_Invite(id = slug)
-    
-    invitedUser = tlguser_service.getUserByEmail(email)
-    if invitedUser:
-        invite.tlguser = invitedUser.key
-    else:
-        invite.email = email
-        
+    invite = Group_Invite()
+    invite.email = email 
     invite.group = group.key
     invite.invited_by = tlguser.key
     if admin == 'true':
@@ -67,16 +60,22 @@ def addMember(email, groupString):
     tlguser = tlguser_service.getUserByEmail(email)
     if group:
         if tlguser:
-            slug = group.key.id() + '~member~' + tlguser.key.id()
-            member = Group_Member(id = slug)
+            member = Group_Member()
             member.tlguser = tlguser.key
             member.group = group.key
             member.put()
+            logging.info(member)
             return member
         
     else:
         return
-    
+
+def addMemberFromObjects(tlguser, group):
+    member = Group_Member()
+    member.tlguser = tlguser.key
+    member.group = group.key
+    member.put()
+    return member
     
     
 '''.....GET.....'''
@@ -87,6 +86,7 @@ def getGroupByID(slug):
     
     return None
 
+#TODO: Type test - make sure its an entity of the right type. These just return whatever the key represents
 def getGroupByKEY(keyString):
     try:
         groupKey = ndb.Key(urlsafe=keyString)
@@ -98,11 +98,31 @@ def getGroupByKEY(keyString):
     
     return
 
+def getInviteByKey(keyString):
+    try:
+        inviteKey = ndb.Key(urlsafe=keyString)
+        invite = inviteKey.get()
+        if invite:
+            logging.info(inviteKey.kind())
+            return invite
+    except:
+        return
+    
+    return
 
+#Authentication
 def getGroupAdminByGroupAndAdmin(group, tlguser):
     groupAdmin = Group_Admin.query(ndb.AND(Group_Admin.group == group.key, Group_Admin.tlguser == tlguser.key)).fetch(1)
     if groupAdmin:
         return groupAdmin
+    
+    return None
+
+#Authentication
+def getGroupMemberByGroupAndUser(group, tlguser):
+    groupMember = Group_Member.query(ndb.AND(Group_Member.group == group.key, Group_Member.tlguser == tlguser.key)).fetch(1)
+    if groupMember:
+        return groupMember
     
     return None
     
@@ -110,8 +130,12 @@ def getGroupAdminByGroupAndAdmin(group, tlguser):
 
 def getGroupMembersFromUser(tlguser):
     groupMembers = Group_Member.query(Group_Member.tlguser == tlguser.key).fetch(50) #TODO: limit of 50 appropriate? Cursor?
-    if groupMembers:
-        return groupMembers
+    if len(groupMembers) > 0:
+        groups = []
+        for groupMember in groupMembers:
+            groups.append( groupMember.group.get() )
+            
+        return groups
     
     return None
 
@@ -120,10 +144,43 @@ def getGroupMembersFromUser(tlguser):
 def getGroupAdminsFromUser(tlguser):
     groupAdmins = Group_Admin.query(Group_Admin.tlguser == tlguser.key).fetch(50)
     #TODO: limit of 50 appropriate? Cursor?
-    if groupAdmins:
-        return groupAdmins
+    if len(groupAdmins) > 0:
+        groups = []
+        for groupAdmin in groupAdmins:
+            groups.append( groupAdmin.group.get() )
+            
+        return groups
     
     return None
 
-
+def getMembers(group):
+    groupMembers = Group_Member.query(Group_Member.group == group.key).fetch(100) #TODO: remove limit?
+    return groupMembers
+    
+    
+def getActivities(group):
+    groupActivities = Activity.query(Activity.group == group.key).fetch(100) #TODO: remove limit?
+    return groupActivities    
+    
+    
+def getInvite(keyString):
+    logging.info('getting invite')
+    try:
+        inviteKey = ndb.Key(urlsafe=keyString)
+        invite = inviteKey.get()
+        if invite:
+            return invite
+    except:
+        return
+    
+    return
+    
+def getGroupInvites(group):
+    invites = Group_Invite.query(Group_Invite.group == group.key).fetch(100)
+    return invites
+    
+    
+    
+    
+    
     
