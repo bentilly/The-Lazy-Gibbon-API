@@ -26,14 +26,22 @@ class TLG_ACTIVITY(object):
                 groupAdmin = services.group_service.getGroupAdminByGroupAndAdmin(group, tlguser)
                 if groupAdmin:
                     #Authenticated as group admin
-                    activity = services.activity_service.addActivity(jsonObj['name'], None, group)
-                    return '{"status":"success", "message":"created group activity"}'
+                    activity = services.activity_service.addActivity(jsonObj['name'], None, group, jsonObj['colour'])
+                    
+                    returnObj = {}
+                    returnObj['status'] = 'success'
+                    returnObj['key'] = activity.key.urlsafe();
+                    returnObj['message'] = 'created group activity'
+                    
+                    s = json.dumps(returnObj)
+                    return s
+            
                 else:
                     #not group admin
                     return '{"status":"error", "message":"not group admin"}'
             else:
                 #no group
-                activity = services.activity_service.addActivity(jsonObj['name'], tlguser, None)
+                activity = services.activity_service.addActivity(jsonObj['name'], tlguser, None, None)
                 return '{"status":"success", "message":"created user activity"}'
                 
         else:

@@ -8,43 +8,10 @@ import tlguser_service
 #from services import tlguser_service
 #import services.tlguser_service
 
-'''class TOKENService(object):
-    def __init__(self):
-        return'''
-
-'''----- TOKEN -----'''
-def createToken(email, password):
-    user = tlguser_service.getUserByEmailAndPassword(email, password)
-    if user == None:
-        return
-    
-    else:
-        #delete all tokens for this person (limits user to one login at a time)
-        clearAllUserTokens(user)
-        #create new one
-        token = addToken(user)
-        return token
-        
-        
-def clearAllUserTokens(user):
-    tokens = Token.query(Token.tlguser == user.key).fetch()
-    for token in tokens:
-        token.key.delete()
-        
-    return
-
-
-def addToken(user):
-    token = Token()
-    token.tlguser = user.key;
-    token.put()
-    
-    return token
-
+""" GET """
 def getUserFromToken(tokenString):
     try:
-        tokenKey = ndb.Key(urlsafe=tokenString)
-        token = tokenKey.get()
+        token = getTokenFromKey(tokenString)
         if token:
             userKey = token.tlguser
             user = userKey.get()
@@ -53,3 +20,67 @@ def getUserFromToken(tokenString):
             return
     except:
         return
+    
+    
+def getTokenFromKey(keyString):
+    tokenKey = ndb.Key(urlsafe=keyString)
+    token = tokenKey.get()
+    if token:
+        return token
+    
+    return None
+
+
+
+""" CREATE """
+def addToken(user, type):
+    token = Token()
+    token.tlguser = user.key;
+    token.type = type;
+    token.put()
+    
+    return token
+
+def createLoginToken(email, password):
+    tlguser = tlguser_service.getUserByEmailAndPassword(email, password)
+    if tlguser == None:
+        return
+    
+    else:
+        #delete all tokens for this person (limits user to one login at a time)
+        clearAllUserLoginTokens(tlguser)
+        #create new one
+        token = addToken(tlguser, 'login')
+        return token
+        
+
+def createLoginTokenFromUser(tlguser):
+    #delete all tokens for this person (limits user to one login at a time)
+    clearAllUserLoginTokens(tlguser)
+    #create new one
+    token = addToken(tlguser, 'login')
+    return token
+
+
+def createEmailConfirmToken(tlguser):
+    token = addToken(tlguser, 'emailConfirm')
+    return token
+
+    
+
+""" DELETE """
+def clearAllUserLoginTokens(user):
+    tokens = Token.query(Token.tlguser == user.key, Token.type == 'login').fetch()
+    for token in tokens:
+        token.key.delete()
+        
+    return
+
+
+
+
+
+
+
+
+

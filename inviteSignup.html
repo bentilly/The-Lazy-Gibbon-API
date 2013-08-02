@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+{% autoescape true %}
+
+<html>
+
+	<head>
+		<title>The Lazy Gibbon | Signup to The Lazy Gibbon</title>
+	</head>
+	
+	<body>
+				
+		<p>Signup to The Lazy Gibbon so you can join {{ invite.group.get().name }}</p>
+		<form action="/groupInvite/inviteSignup" method="post">
+			<fieldset>
+				<input type="hidden" name="inviteKey" value="{{ invite.key.urlsafe() }}"></input>
+				<label for="password">name:</label>
+  				<input type="text" name="name" id="name"/>
+  				<label for="password">password:</label>
+  				<input type="password" name="password" id="password"/>
+  				<br/>
+  				<label for="confirm">confirm:</label>
+  				<input type="password" name="confirm" id="confirm"/>
+  				<br/><br/>
+				<button class="resetButton" type="submit" >Submit</button>
+			</fieldset>	
+		</form>
+		<p class="errorMessage">{{ message }}</p>
+	</body>
+</html>
+{% endautoescape %}

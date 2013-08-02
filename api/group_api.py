@@ -27,18 +27,30 @@ class TLG_GROUP(object):
             return '{"error":"invalid token"}'
 
 
-    def addInvite(self, jsonObj):
+    def addInvite(self, jsonObj, host_url):
         #Authentication: Valid TOKEN, Valid GROUP ID, TOKEN.TLGUSER is ADMIN of GROUP
         tlguser = services.token_service.getUserFromToken(jsonObj['token'])
         if tlguser:
-            group = services.group_service.getGroupByID(jsonObj['group'])
+            group = services.group_service.getGroupByKEY(jsonObj['group'])
             if group:
                 groupAdmin = services.group_service.getGroupAdminByGroupAndAdmin(group, tlguser)
                 if groupAdmin:
                     #Authenticated
-                    invite = services.group_service.addInvite(tlguser, group, jsonObj['email'], jsonObj['admin'])
+                    try:
+                        admin = jsonObj['admin']
+                    except:
+                        admin = None;
+                    
+                    invite = services.group_service.addInvite(tlguser, group, jsonObj['email'], admin)
                     if invite:
-                        return '{"status":"success"}'
+                        services.email_service.sendGroupInviteEmail(invite, host_url)
+                        returnObj = {}
+                        returnObj['status'] = 'success'
+                        returnObj['key'] = invite.key.urlsafe()
+                        s = json.dumps(returnObj)
+            
+                        return s
+
                     else:
                         return '{"status":"error", "message":"Could not create invite. Possible bad email"}'
                 else:
@@ -47,6 +59,31 @@ class TLG_GROUP(object):
                 return '{"status":"error", "message":"invalid group"}'
         else:
             return '{"status":"error", "message":"invalid token"}'
+        
+        
+    def deleteInvite(self, jsonObj):
+        #Authentication: Valid TOKEN, Valid GROUP_INVITE. TLGUSER is ADMIN of GROUP_INVITE.GROUP
+        tlguser = services.token_service.getUserFromToken(jsonObj['token'])
+        if tlguser:
+            # invite = services.group_service.getInviteByKey(jsonObj['key'])
+            invite = services.utils.getEntityByKeystring(jsonObj['key'], 'Group_Invite')
+            if invite:
+                groupAdmin = services.group_service.getGroupAdminByGroupAndAdmin(invite.group.get(), tlguser)
+                if groupAdmin:
+                    #Authenticated
+                    if services.utils.deleteEntityByKey(invite.key, 'Group_Invite'):
+                        return '{"status":"success", "message":"Invite deleted"}'
+                    else:
+                        return '{"status":"error", "message":"invite not deleted"}'
+                else:
+                    return '{"status":"error", "message":"not allowed to delete invite"}'
+            else:
+                return '{"status":"error", "message":"invalid invite"}'
+        else:
+            return '{"status":"error", "message":"invalid token"}'
+        
+        
+        
         
         
     def addMember(self, jsonObj):
@@ -65,15 +102,89 @@ class TLG_GROUP(object):
             return '{"status":"error", "message":"you need to be a system admin to do this"}'
                 
                 
+    def getMemberWorkouts(self, jsonObj):
+        #Authentication: Valid TOKEN, Valid GROUP. USER is MEMBER or ADMIN of group
+        tlguser = services.token_service.getUserFromToken(jsonObj['token'])
+        if tlguser:
+            group = services.group_service.getGroupByKEY(jsonObj['group'])
+            if group:
+                groupAdmin = services.group_service.getGroupAdminByGroupAndAdmin(group, tlguser)
+                groupMember = services.group_service.getGroupMemberByGroupAndUser(group, tlguser)
+                if groupAdmin or groupMember:
+                    #Authenticated
+                    #setup  
+                    returnObj = {}
+                    memberList = []
+                    #get group members
+                    groupMembers = services.group_service.getMembers(group)
+                    #get group activities
+                    groupActivities = services.group_service.getActivities(group)
+                    
+                    #build response
+                    for member in groupMembers:
+                        memberUser = member.tlguser.get()
+                        #group activities
+                        activitySummaries = []
+                        for groupActivity in groupActivities:
+                            #get workouts for this user and activity
+                            workoutSummaries = services.workout_service.getWorkoutSummariesByUserAndActivity(member.tlguser, groupActivity.key)
+                            #make activity summary object
+                            if workoutSummaries:
+                                activitySummary = {
+                                                   'activity':groupActivity.key.urlsafe(),
+                                                   'workoutSummaries':workoutSummaries
+                                                   }
+                                activitySummaries.append(activitySummary)
+                        
+                        memberData = {
+                                       'name':memberUser.name,
+                                       'email':memberUser.email,
+                                       'activities':activitySummaries
+                                       }
+                        
+                        if memberUser == tlguser:
+                            memberData['currentUser'] = 'true'
+                        
+                        memberList.append(memberData)
+                    
+                    returnObj['status'] = 'success'
+                    returnObj['members'] = memberList
+                    s = json.dumps(returnObj)
+            
+                    return s
+                    
+                    
+                else:
+                    return '{"status":"error", "message":"user not admin of group"}'
+            else:
+                return '{"status":"error", "message":"invalid group"}'
+        else:
+            return '{"status":"error", "message":"invalid token"}'
                 
                 
+    def getGroupInvites(self, jsonObj):
+        #Authentication: Valid TOKEN, Valid GROUP. USER is ADMIN of group
+        tlguser = services.token_service.getUserFromToken(jsonObj['token'])
+        if tlguser:
+            group = services.group_service.getGroupByKEY(jsonObj['group'])
+            if group:
+                groupAdmin = services.group_service.getGroupAdminByGroupAndAdmin(group, tlguser)
+                if groupAdmin:
+                    invites = services.group_service.getGroupInvites(group)
+                    
+                    returnObj = {}
+                    invitesList = []
+                    
+                    for invite in invites:
+                        invitesList.append({'email':invite.email, 'key':invite.key.urlsafe()})
+                    
+                    returnObj['status'] = 'success'
+                    returnObj['invites'] = invitesList
+                    s = json.dumps(returnObj)
+                    return s
                 
-                
-                
-                
-                
-                
-                
+        else:
+            return '{"status":"error", "message":"invalid token"}'
                 
                 
                 

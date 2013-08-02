@@ -4,6 +4,8 @@ from google.appengine.ext import ndb
 class Token(ndb.Model):
     tlguser = ndb.KeyProperty(kind="TLGUser")
     created = ndb.DateTimeProperty(auto_now_add=True)
+    #types of tokens: login, emailConfirm, (TODO:passwordReset)
+    type = ndb.StringProperty(default='login')
 
 
 #USER
@@ -11,7 +13,11 @@ class TLGUser(ndb.Model):
     name = ndb.StringProperty()
     email = ndb.StringProperty()
     password = ndb.StringProperty()
+    emailConfirmed = ndb.BooleanProperty(default=False)
     created = ndb.DateTimeProperty(auto_now_add=True)
+    #for resetting lost passwords
+    resetToken = ndb.StringProperty()
+    resetCreated = ndb.DateProperty();
     
 #GROUP
 class Group(ndb.Model):
@@ -31,7 +37,6 @@ class Group_Admin(ndb.Model):
     
 class Group_Invite(ndb.Model):
     email = ndb.StringProperty()
-    tlguser = ndb.KeyProperty(kind="TLGUser")
     group = ndb.KeyProperty(kind="Group")
     invited_by = ndb.KeyProperty(kind="TLGUser")
     admin_invite = ndb.BooleanProperty(default=False)

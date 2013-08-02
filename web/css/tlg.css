@@ -1,0 +1,52 @@
+
+
+#header{
+	background: url(../img/forest_path.jpg) center top no-repeat;
+	background-size:cover;
+	position: fixed;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+#headerContent{
+	background-color: #123456;
+	margin: auto;
+	width: 800px;
+	position: relative;
+}
+#headerLeft{
+	position: absolute;
+	top: 100px;
+}
+#headerRight{
+	text-align: left;
+	background: rgb(0, 10, 0);
+	background: rgba(0, 10, 0, 0.8);
+	border: none;
+	color: white;
+	position: absolute;
+	top: 110px;
+	left: 430px;
+}
+#headerRight h3{
+	margin: 0 0 15px 0;
+	line-height: 1;
+	font-weight: normal;
+	font-size: 22px;
+	font-family: 'Fjalla One', sans-serif;
+
+}
+.open-button{
+	width: 100%
+}
+
+
+.tlg-logo{
+	width: 400px;
+	height: 299px;
+}
+p{
+	font-family: 'Open Sans Condensed', sans-serif;
+	font-size: 18px;
+}

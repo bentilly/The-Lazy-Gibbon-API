@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+{% autoescape true %}
+
+<html>
+		<title>The Lazy Gibbon | Confirm Email</title>
+	</head>
+	<body>
+		<h2>Thanks {{ user.name }}!</h2>
+		<h4>{{ user.email }}</h4>
+		<p>Your email address has been confirmed.</p>
+		<p><a href="{{ host_url }}">Go to The Lazy Gibbon<a/></p>
+	</body>
+</html>
+{% endautoescape %}

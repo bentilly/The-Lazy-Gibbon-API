@@ -9,6 +9,8 @@ from api import group_api
 from api import activity_api
 from api import workout_api
 
+from services import token_service
+
 TLG_TOKEN = token_api.TLG_TOKEN()
 TLG_USER = tlguser_api.TLG_USER()
 TLG_GROUP = group_api.TLG_GROUP()
@@ -16,12 +18,13 @@ TLG_ACTIVITY = activity_api.TLG_ACTIVITY()
 TLG_WORKOUT = workout_api.TLG_WORKOUT()
 
 
-
-class MainPage(webapp2.RequestHandler):
+class HomePage(webapp2.RequestHandler):
     def get(self):
-        #self.response.headers['Content-Type'] = 'text/plain'
-        #self.response.write('Welcome to The LAzy Gibbon web service')
         self.redirect("/web/index.html")
+
+class AppPage(webapp2.RequestHandler):
+    def get(self):
+        self.redirect("/app/index.html")
 
 
 class APIHandler(webapp2.RequestHandler):
@@ -38,15 +41,38 @@ class APIHandler(webapp2.RequestHandler):
         self.data = self.request.get('data')
         jsonObj = json.loads(self.data)
         
+        try:
+            if jsonObj['operation'] == 'token.createToken' or jsonObj['operation'] == 'user.signup':
+                logString = jsonObj['email']
+            else:
+                tlguser = token_service.getUserFromToken(jsonObj['token'])
+                logString = tlguser.name + " : " + tlguser.email
+            
+            logString += " : "
+            logString += jsonObj['operation']
+            logging.info(logString)
+        except:
+            logging.info('no "operation" supplied')
+        
+        
         '''----- TOKEN -----'''
         #same as login
         if jsonObj['operation'] == 'token.createToken':
             self.response.out.write(TLG_TOKEN.createToken(jsonObj))
+            
             return
         
         '''----- USER -----'''
         if jsonObj['operation'] == 'user.signup':
-            self.response.out.write(TLG_USER.signup(jsonObj))
+            #get the host URL for creating full links (eg in emails)
+            host_url = self.request.host_url
+            self.response.out.write(TLG_USER.signup(jsonObj, host_url))
+            return
+        
+        if jsonObj['operation'] == 'user.resetPassword':
+            #get the host URL for creating full links (eg in emails)
+            host_url = self.request.host_url
+            self.response.out.write(TLG_USER.resetPassword(jsonObj, host_url))
             return
         
         if jsonObj['operation'] == 'user.getGroups':
@@ -55,6 +81,10 @@ class APIHandler(webapp2.RequestHandler):
         
         if jsonObj['operation'] == 'user.getAdminGroups':
             self.response.write(TLG_USER.getAdminGroups(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'user.getAllMyGroups':
+            self.response.write(TLG_USER.getAllMyGroups(jsonObj))
             return
         
         if jsonObj['operation'] == 'user.getActivities':
@@ -78,15 +108,30 @@ class APIHandler(webapp2.RequestHandler):
         if jsonObj['operation'] == 'group.addGroup':
             self.response.out.write(TLG_GROUP.addGroup(jsonObj))
             return
+
+        if jsonObj['operation'] == 'group.getMemberWorkouts':
+            self.response.out.write(TLG_GROUP.getMemberWorkouts(jsonObj))
+            return
+        
+        if jsonObj['operation'] == 'group.getGroupInvites':
+            self.response.out.write(TLG_GROUP.getGroupInvites(jsonObj))
+            return
         
         if jsonObj['operation'] == 'group.addInvite':
-            self.response.out.write(TLG_GROUP.addInvite(jsonObj))
+            #get the host URL for creating full links (eg in emails)
+            host_url = self.request.host_url
+            self.response.out.write(TLG_GROUP.addInvite(jsonObj, host_url))
+            return
+        
+        if jsonObj['operation'] == 'group.deleteInvite':
+            self.response.out.write(TLG_GROUP.deleteInvite(jsonObj))
             return
         
         #SYSADMIN ONLY
         if jsonObj['operation'] == 'group.addMember':
             self.response.out.write(TLG_GROUP.addMember(jsonObj))
             return
+        
         
         '''----- ACTIVITY -----'''
         if jsonObj['operation'] == 'activity.addActivity':
@@ -106,10 +151,15 @@ class APIHandler(webapp2.RequestHandler):
             self.response.out.write(TLG_WORKOUT.updateWorkout(jsonObj))
             return
         
+        if jsonObj['operation'] == 'workout.deleteWorkout':
+            self.response.out.write(TLG_WORKOUT.deleteWorkout(jsonObj))
+            return
+        
         self.response.write('{"status":"error", "message":"Unknown Request"}')
         
 app = webapp2.WSGIApplication([
-								('/', MainPage),
+								('/', HomePage),
+                                ('/app', AppPage),
 								('/api', APIHandler) 
 								
 								], debug=True)

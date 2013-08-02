@@ -1,5 +1,5 @@
 application: thelazygibbonapi
-version: v0-0-2
+version: v0-0-35
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -8,9 +8,22 @@ threadsafe: yes
 handlers:
 - url: /admin
   static_dir: admin
+  login: admin
   
 - url: /web
   static_dir: web
+  
+- url: /app
+  static_dir: app
+  
+- url: /reset.*
+  script: resetPassword.app
+  
+- url: /groupInvite.*
+  script: groupInvite.app
+
+- url: /signup.*
+  script: signup.app
 
 - url: /.*
   script: tlg.app
@@ -20,3 +33,7 @@ handlers:
 libraries:
 - name: jinja2
   version: latest
+  
+  
+builtins:
+- remote_api: on
