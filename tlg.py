@@ -108,6 +108,10 @@ class APIHandler(webapp2.RequestHandler):
         if jsonObj['operation'] == 'group.addGroup':
             self.response.out.write(TLG_GROUP.addGroup(jsonObj))
             return
+        
+        if jsonObj['operation'] == 'group.editGroup':
+            self.response.out.write(TLG_GROUP.editGroup(jsonObj))
+            return
 
         if jsonObj['operation'] == 'group.getMemberWorkouts':
             self.response.out.write(TLG_GROUP.getMemberWorkouts(jsonObj))

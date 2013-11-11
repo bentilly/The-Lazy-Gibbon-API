@@ -16,27 +16,19 @@ import tlguser_service
 
 '''.....ADD.....'''
 def addGroup(name, tlguser):
-    slug = utils.slugify(name)
-    #check for existing group with this slug
-    if getGroupByID(slug) != None:
-        return
+    group = Group()
+    group.name = name
+    group.put()
+    groupAdmin = addGroupAdmin(group, tlguser)
     
-    else:
-        group = Group(id=slug)
-        group.name = name
-        group.put()
-        
-        groupAdmin = addGroupAdmin(group, tlguser)
-        #TODO:catch a fail at Group or GroupAdmin and fail the whole process
-        
-        return group
+    return group
 
 def addGroupAdmin(group, tlguser):
-    groupSlug = group.key.id()
-    tlguserSlug = tlguser.key.id()
-    groupAdminSlug = groupSlug + '~admin~' + tlguserSlug
+    #groupSlug = group.key.id()
+    #tlguserSlug = tlguser.key.id()
+    #groupAdminSlug = groupSlug + '~admin~' + tlguserSlug
     
-    groupAdmin = Group_Admin(id = groupAdminSlug)
+    groupAdmin = Group_Admin()
     groupAdmin.group = group.key
     groupAdmin.tlguser = tlguser.key
     groupAdmin.put()
@@ -79,12 +71,12 @@ def addMemberFromObjects(tlguser, group):
     
     
 '''.....GET.....'''
-def getGroupByID(slug):
-    group = Group.get_by_id(slug)
-    if group:
-        return group
+#def getGroupByID(slug):
+#    group = Group.get_by_id(slug)
+#    if group:
+#        return group
     
-    return None
+#    return None
 
 #TODO: Type test - make sure its an entity of the right type. These just return whatever the key represents
 def getGroupByKEY(keyString):
@@ -93,6 +85,16 @@ def getGroupByKEY(keyString):
         group = groupKey.get()
         if group:
             return group
+    except:
+        return
+    
+    return
+
+#a bit light. Error checking?
+def editGroup(group, name):
+    try:
+        group.name = name
+        group.put()
     except:
         return
     

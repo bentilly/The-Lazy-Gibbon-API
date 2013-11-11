@@ -20,11 +20,28 @@ class TLG_GROUP(object):
         if tlguser:
             group = services.group_service.addGroup(jsonObj['name'], tlguser)
             if group:
-                return '{"status":"success Group made"}'
+                returnObj = {}
+                returnObj['status'] = 'success'
+                returnObj['key'] = group.key.urlsafe()
+                s = json.dumps(returnObj)
+                return s
             else:
-                return '{"error":"group name already exists or some other error"}'
+                return '{"error":"no group created"}'
         else:
-            return '{"error":"invalid token"}'
+            return '{"status":"error", "message":"invalid token"}'
+        
+    def editGroup(self, jsonObj):
+        #Authentication: Valid TOKEN
+        tlguser = services.token_service.getUserFromToken(jsonObj['token'])
+        if tlguser:
+            group = services.group_service.getGroupByKEY(jsonObj['key'])
+            if group:
+                services.group_service.editGroup(group, jsonObj['name'])
+                return '{"status":"success"}'
+            else:
+                return '{"status":"error", "message":"could not find group"}'
+        else:
+            return '{"status":"error", "message":"invalid token"}'
 
 
     def addInvite(self, jsonObj, host_url):
