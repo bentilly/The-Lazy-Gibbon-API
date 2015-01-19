@@ -99,6 +99,7 @@ class TLG_USER(object):
 			#get groups I admin
 			groupAdmins = services.group_service.getGroupAdminsFromUser(tlguser)
 			#get groups I am a member of
+			#and I can edit this
 			groupMembers = services.group_service.getGroupMembersFromUser(tlguser)
 			
 			returnObj = {}
